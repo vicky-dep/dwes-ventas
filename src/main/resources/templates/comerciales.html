@@ -2,39 +2,38 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Comerciales</title>
-    <style>
-        .clearfix::after {
-            content: "";
-            display: block;
-            clear: both;
-        }
-    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div id="contenedora" style="float: none; margin:0 auto; width: 95%">
-        <div class="clearfix">
-            <div style="float: left; width: 50%;">
-                <h1>Comerciales</h1>
-            </div>
-        </div>
-        <div class="clearfix">
-            <div style="float: left; width: 20%">Id</div>
-            <div style="float: left; width: 20%">Nombre</div>
-            <div style="float: left; width: 20%">Apellido1</div>
-            <div style="float: left; width: 20%">Apellido2</div>
-            <div style="float: none; width: auto; overflow: hidden;">Comisión</div>
-        </div>
-        <div class="clearfix">
-            <hr/>
-        </div>
-        <div th:each="comercial : ${listaComerciales}" style="margin-top: 6px;" class="clearfix">
-            <div style="float: left; width: 20%" th:text="${comercial.id}">0</div>
-            <div style="float: left; width: 20%" th:text="${comercial.nombre}">nombre</div>
-            <div style="float: left; width: 20%" th:text="${comercial.apellido1}">apellido1</div>
-            <div style="float: left; width: 20%" th:text="${comercial.apellido2 ?: '&nbsp;'}">apellido2</div>
-            <div style="float: none; width: auto; overflow: hidden;" th:text="${comercial.comisión}">0.0</div>
+<main class="container py-4">
+    <div class="row align-items-center border-bottom pb-3 mb-3">
+        <div class="col"><h1 class="h2 mb-0">Comerciales</h1></div>
+        <div class="col-auto"><a class="btn btn-primary" th:href="@{/comerciales/crear}">Crear comercial</a></div>
+    </div>
+    <div class="row g-2 fw-bold border-bottom pb-2 d-none d-lg-flex">
+        <div class="col-lg-1">Id</div>
+        <div class="col-lg-2">Nombre</div>
+        <div class="col-lg-2">Apellido 1</div>
+        <div class="col-lg-2">Apellido 2</div>
+        <div class="col-lg-2">Comisión</div>
+        <div class="col-lg-3">Acciones</div>
+    </div>
+    <div class="row g-2 align-items-center border-bottom py-3" th:each="comercial : ${listaComerciales}">
+        <div class="col-6 col-md-2 col-lg-1"><span class="d-lg-none fw-bold">Id: </span><span th:text="${comercial.id}">0</span></div>
+        <div class="col-6 col-md-5 col-lg-2"><span class="d-lg-none fw-bold">Nombre: </span><span th:text="${comercial.nombre}">Nombre</span></div>
+        <div class="col-6 col-md-5 col-lg-2"><span class="d-lg-none fw-bold">Apellido 1: </span><span th:text="${comercial.apellido1}">Apellido</span></div>
+        <div class="col-6 col-md-5 col-lg-2"><span class="d-lg-none fw-bold">Apellido 2: </span><span th:text="${comercial.apellido2}">Apellido</span></div>
+        <div class="col-6 col-md-5 col-lg-2"><span class="d-lg-none fw-bold">Comisión: </span><span th:text="${comercial.comisión}">0.0</span></div>
+        <div class="col-12 col-lg-3 d-flex flex-wrap gap-1">
+            <a class="btn btn-sm btn-outline-secondary" th:href="@{/comerciales/{id}(id=${comercial.id})}">Detalle</a>
+            <a class="btn btn-sm btn-outline-primary" th:href="@{/comerciales/editar/{id}(id=${comercial.id})}">Editar</a>
+            <form th:action="@{/comerciales/borrar/{id}(id=${comercial.id})}" method="post">
+                <button class="btn btn-sm btn-outline-danger" type="submit">Eliminar</button>
+            </form>
         </div>
     </div>
+</main>
 </body>
 </html>

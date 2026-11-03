@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller 
 public class ClienteController {
@@ -20,5 +23,50 @@ public class ClienteController {
         List<Cliente> listaClientes = clienteService.listAll();
         model.addAttribute("listaClientes", listaClientes);
         return "clientes";
+    }
+
+    @GetMapping("/clientes/{id}")
+    public String detalle(Model model, @PathVariable int id) {
+        return clienteService.find(id)
+                .map(cliente -> {
+                    model.addAttribute("cliente", cliente);
+                    return "detalle-cliente";
+                })
+                .orElse("redirect:/clientes");
+    }
+
+    @GetMapping("/clientes/crear")
+    public String crear(Model model) {
+        model.addAttribute("cliente", new Cliente());
+        return "crear-cliente";
+    }
+
+    @PostMapping("/clientes/crear")
+    public String submitCrear(@ModelAttribute("cliente") Cliente cliente) {
+        clienteService.create(cliente);
+        return "redirect:/clientes";
+    }
+
+    @GetMapping("/clientes/editar/{id}")
+    public String editar(Model model, @PathVariable int id) {
+        return clienteService.find(id)
+                .map(cliente -> {
+                    model.addAttribute("cliente", cliente);
+                    return "editar-cliente";
+                })
+                .orElse("redirect:/clientes");
+    }
+
+    @PostMapping("/clientes/editar/{id}")
+    public String submitEditar(@PathVariable int id, @ModelAttribute("cliente") Cliente cliente) {
+        cliente.setId(id);
+        clienteService.update(cliente);
+        return "redirect:/clientes";
+    }
+
+    @PostMapping("/clientes/borrar/{id}")
+    public String submitBorrar(@PathVariable int id) {
+        clienteService.delete(id);
+        return "redirect:/clientes";
     }
 }
