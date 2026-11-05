@@ -1,0 +1,10 @@
+<nav th:fragment="navbar" class="navbar navbar-expand bg-body-tertiary border-bottom">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" th:href="@{/clientes}">Ventas</a>
+        <div class="navbar-nav flex-row flex-wrap gap-2" aria-label="Navegación principal">
+            <a class="nav-link" th:href="@{/clientes}">Clientes</a>
+            <a class="nav-link" th:href="@{/comerciales}">Comerciales</a>
+            <a class="nav-link" th:href="@{/pedidos}">Pedidos</a>
+        </div>
+    </div>
+</nav>
