@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+import org.iesvdm.modelo.ClientePedidosDTO;
 import org.iesvdm.modelo.PedidoDetalle;
 import org.iesvdm.modelo.Pedido;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -105,6 +106,29 @@ public class PedidoDAOImpl implements PedidoDAO {
 		return jdbcTemplate.query(
 				SELECT_PEDIDOS_WITH_NAMES + " WHERE p.id_comercial = ?",
 				(rs, rowNum) -> mapPedidoDetalle(rs),
+				comercialId);
+	}
+
+	@Override
+	public List<ClientePedidosDTO> findClientesByComercialIdOrderByTotalDesc(int comercialId) {
+		return jdbcTemplate.query("""
+				SELECT c.id AS cliente_id,
+					CONCAT_WS(' ', c.nombre, c.apellido1, c.apellido2) AS cliente_nombre_completo,
+					SUM(p.total) AS importe_total_pedidos
+				FROM cliente c
+				JOIN pedido p ON p.id_cliente = c.id
+				WHERE EXISTS (
+					SELECT 1
+					FROM pedido pc
+					WHERE pc.id_cliente = c.id AND pc.id_comercial = ?
+				)
+				GROUP BY c.id, c.nombre, c.apellido1, c.apellido2
+				ORDER BY importe_total_pedidos DESC, c.id ASC
+				""",
+				(rs, rowNum) -> new ClientePedidosDTO(
+						rs.getInt("cliente_id"),
+						rs.getString("cliente_nombre_completo"),
+						rs.getDouble("importe_total_pedidos")),
 				comercialId);
 	}
 

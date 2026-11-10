@@ -3,6 +3,7 @@ package org.iesvdm.controlador;
 import java.util.List;
 
 import org.iesvdm.modelo.Comercial;
+import org.iesvdm.modelo.PedidoDetalle;
 import org.iesvdm.servicios.ComercialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,8 +30,13 @@ public class ComercialController {
 	public String detalle(Model model, @PathVariable int id) {
 		return comercialService.find(id)
 				.map(comercial -> {
+					List<PedidoDetalle> pedidos = comercialService.listPedidosByComercial(id);
 					model.addAttribute("comercial", comercial);
-					model.addAttribute("pedidos", comercialService.listPedidosByComercial(id));
+					model.addAttribute("pedidos", pedidos);
+					model.addAttribute("estadisticasPedidos",
+							comercialService.calcularEstadisticasPedidos(pedidos));
+					model.addAttribute("clientesOrdenados",
+							comercialService.listClientesByComercialOrderByTotalDesc(id));
 					return "detalle-comercial";
 				})
 				.orElse("redirect:/comerciales");
