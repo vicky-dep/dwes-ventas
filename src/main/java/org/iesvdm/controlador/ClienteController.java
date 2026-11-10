@@ -29,6 +29,11 @@ public class ClienteController {
         return "clientes";
     }
 
+    @GetMapping("/clientes/ciudad/{ciudad}")
+    public String listarPorCiudad(@PathVariable String ciudad, Model model) {
+        return listar(ciudad, model);
+    }
+
     @GetMapping("/clientes/{id}")
     public String detalle(Model model, @PathVariable int id) {
         return clienteService.find(id)
