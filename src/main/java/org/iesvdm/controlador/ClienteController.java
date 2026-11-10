@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller 
 public class ClienteController {
@@ -19,9 +20,12 @@ public class ClienteController {
     private ClienteService clienteService;
 
     @GetMapping("/clientes")
-    public String listar(Model model) {
-        List<Cliente> listaClientes = clienteService.listAll();
+    public String listar(@RequestParam(required = false) String ciudad, Model model) {
+        List<Cliente> listaClientes = ciudad == null || ciudad.isBlank()
+            ? clienteService.listAll()
+            : clienteService.listByCiudad(ciudad);
         model.addAttribute("listaClientes", listaClientes);
+        model.addAttribute("ciudad", ciudad);
         return "clientes";
     }
 

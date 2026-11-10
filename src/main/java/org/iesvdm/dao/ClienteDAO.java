@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 public interface ClienteDAO {
 	public void create(Cliente cliente);
 	public List<Cliente> getAll();
+	public List<Cliente> getByCiudad(String ciudad);
 	public Optional<Cliente> find(int id);
 	public void update(Cliente cliente);
 	public void delete(int id);
