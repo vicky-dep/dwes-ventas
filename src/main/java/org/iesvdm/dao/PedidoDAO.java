@@ -14,6 +14,7 @@ public interface PedidoDAO {
 	public Optional<Pedido> find(int id);
 	public List<PedidoDetalle> getAllWithNames();
 	public Optional<PedidoDetalle> findWithNames(int id);
+	public List<PedidoDetalle> findByComercialId(int comercialId);
 	public void update(Pedido pedido);
 	public void delete(int id);
 }

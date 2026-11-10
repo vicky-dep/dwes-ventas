@@ -101,6 +101,14 @@ public class PedidoDAOImpl implements PedidoDAO {
 	}
 
 	@Override
+	public List<PedidoDetalle> findByComercialId(int comercialId) {
+		return jdbcTemplate.query(
+				SELECT_PEDIDOS_WITH_NAMES + " WHERE p.id_comercial = ?",
+				(rs, rowNum) -> mapPedidoDetalle(rs),
+				comercialId);
+	}
+
+	@Override
 	public void update(Pedido pedido) {
 		int rows = jdbcTemplate.update("""
 				UPDATE pedido SET

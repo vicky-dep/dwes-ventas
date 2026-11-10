@@ -20,6 +20,32 @@
         <dt class="col-sm-3">Segundo apellido</dt><dd class="col-sm-9" th:text="${comercial.apellido2}">Apellido</dd>
         <dt class="col-sm-3">Comisión</dt><dd class="col-sm-9" th:text="${comercial.comisión}">0.0</dd>
     </dl>
+    <section class="mt-4">
+        <h2 class="h4 mb-3">Pedidos</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Id</th>
+                        <th scope="col">Total</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Cliente</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:if="${#lists.isEmpty(pedidos)}">
+                        <td colspan="4">Este comercial no tiene pedidos.</td>
+                    </tr>
+                    <tr th:each="pedido : ${pedidos}">
+                        <td th:text="${pedido.id}">0</td>
+                        <td th:text="${pedido.total}">0.00</td>
+                        <td th:text="${pedido.fecha ?: '-'}">fecha</td>
+                        <td th:text="${pedido.clienteNombreCompleto}">cliente</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
     <a class="btn btn-primary" th:href="@{/comerciales/editar/{id}(id=${comercial.id})}">Editar</a>
 </main>
 </body>

@@ -30,6 +30,7 @@ public class ComercialController {
 		return comercialService.find(id)
 				.map(comercial -> {
 					model.addAttribute("comercial", comercial);
+					model.addAttribute("pedidos", comercialService.listPedidosByComercial(id));
 					return "detalle-comercial";
 				})
 				.orElse("redirect:/comerciales");
