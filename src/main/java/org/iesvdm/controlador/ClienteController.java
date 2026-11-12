@@ -1,9 +1,16 @@
 package org.iesvdm.controlador;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.iesvdm.modelo.Cliente;
+import org.iesvdm.modelo.ClienteComercial;
+import org.iesvdm.modelo.Comercial;
+import org.iesvdm.servicios.ClienteComercialService;
 import org.iesvdm.servicios.ClienteService;
+import org.iesvdm.servicios.ComercialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,6 +25,12 @@ public class ClienteController {
 
     @Autowired 
     private ClienteService clienteService;
+
+    @Autowired
+    private ComercialService comercialService;
+
+    @Autowired
+    private ClienteComercialService clienteComercialService;
 
     @GetMapping("/clientes")
     public String listar(@RequestParam(required = false) String ciudad, Model model) {
@@ -60,10 +73,46 @@ public class ClienteController {
     public String editar(Model model, @PathVariable int id) {
         return clienteService.find(id)
                 .map(cliente -> {
+                    List<ClienteComercial> comercialesVinculados = clienteComercialService.findByClienteId(id);
+                    Set<Integer> idsVinculados = comercialesVinculados.stream()
+                            .map(ClienteComercial::getComercialId)
+                            .collect(Collectors.toSet());
+                    List<Comercial> comercialesDisponibles = comercialService.listAll().stream()
+                            .filter(comercial -> !idsVinculados.contains(comercial.getId()))
+                            .toList();
+
                     model.addAttribute("cliente", cliente);
+                    model.addAttribute("comercialesDisponibles", comercialesDisponibles);
+                    model.addAttribute("comercialesVinculados", comercialesVinculados);
+                    model.addAttribute("fechaActual", LocalDate.now());
                     return "editar-cliente";
                 })
                 .orElse("redirect:/clientes");
+    }
+
+    @PostMapping("/clientes/editar/{id}/comerciales")
+    public String submitAñadirComercial(@PathVariable int id,
+            @RequestParam int comercialId,
+            @RequestParam LocalDate fecha,
+            @RequestParam int prioridad) {
+        if (clienteService.find(id).isEmpty() || comercialService.find(comercialId).isEmpty() || prioridad < 1) {
+            return "redirect:/clientes/editar/" + id;
+        }
+
+        boolean yaVinculado = clienteComercialService.findByClienteId(id).stream()
+                .anyMatch(vinculo -> vinculo.getComercialId() == comercialId);
+        if (!yaVinculado) {
+            clienteComercialService.create(id, comercialId, fecha, prioridad);
+        }
+        return "redirect:/clientes/editar/" + id;
+    }
+
+    @PostMapping("/clientes/editar/{id}/comerciales/{comercialId}/borrar")
+    public String submitBorrarComercial(@PathVariable int id, @PathVariable int comercialId) {
+        if (clienteService.find(id).isPresent()) {
+            clienteComercialService.delete(id, comercialId);
+        }
+        return "redirect:/clientes/editar/" + id;
     }
 
     @PostMapping("/clientes/editar/{id}")

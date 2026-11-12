@@ -43,6 +43,64 @@
             <a class="btn btn-outline-secondary" th:href="@{/clientes}">Cancelar</a>
         </div>
     </form>
+
+    <section class="mt-5">
+        <h2 class="h4 mb-3">Añadir comercial al cliente</h2>
+        <form th:action="@{/clientes/editar/{id}/comerciales(id=${cliente.id})}" method="post" class="row g-3">
+            <div class="col-md-6">
+                <label for="comercialId" class="form-label">Comercial</label>
+                <select id="comercialId" name="comercialId" class="form-select" required
+                        th:disabled="${#lists.isEmpty(comercialesDisponibles)}">
+                    <option value="" selected disabled>Selecciona un comercial</option>
+                    <option th:each="comercial : ${comercialesDisponibles}" th:value="${comercial.id}"
+                            th:text="${comercial.nombre + ' ' + comercial.apellido1 + (comercial.apellido2 != null ? ' ' + comercial.apellido2 : '')}"></option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="fecha" class="form-label">Fecha</label>
+                <input id="fecha" name="fecha" class="form-control" type="date"
+                       th:value="${fechaActual}" required>
+            </div>
+            <div class="col-md-3">
+                <label for="prioridad" class="form-label">Prioridad</label>
+                <input id="prioridad" name="prioridad" class="form-control" type="number" min="1"
+                       value="1" required>
+            </div>
+            <div class="col-12">
+                <button class="btn btn-primary" type="submit" th:disabled="${#lists.isEmpty(comercialesDisponibles)}">
+                    Añadir comercial
+                </button>
+            </div>
+        </form>
+
+        <h3 class="h5 mt-4 mb-3">Comerciales vinculados</h3>
+        <div th:if="${#lists.isEmpty(comercialesVinculados)}" class="text-muted">No hay comerciales vinculados a este cliente.</div>
+        <div class="table-responsive" th:unless="${#lists.isEmpty(comercialesVinculados)}">
+            <table class="table table-striped align-middle">
+                <thead>
+                    <tr>
+                        <th scope="col">Comercial</th>
+                        <th scope="col">Fecha</th>
+                        <th scope="col">Prioridad</th>
+                        <th scope="col">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="vinculo : ${comercialesVinculados}">
+                        <td th:text="${vinculo.comercialNombre + ' ' + vinculo.comercialApellido1 + (vinculo.comercialApellido2 != null ? ' ' + vinculo.comercialApellido2 : '')}"></td>
+                        <td th:text="${vinculo.fecha}"></td>
+                        <td th:text="${vinculo.prioridad}"></td>
+                        <td>
+                            <form th:action="@{/clientes/editar/{id}/comerciales/{comercialId}/borrar(id=${cliente.id}, comercialId=${vinculo.comercialId})}"
+                                  method="post" class="m-0">
+                                <button class="btn btn-outline-danger btn-sm" type="submit">Borrar</button>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
 </main>
 </body>
 </html>
