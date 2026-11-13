@@ -95,7 +95,8 @@ public class ClienteController {
             @RequestParam int comercialId,
             @RequestParam LocalDate fecha,
             @RequestParam int prioridad) {
-        if (clienteService.find(id).isEmpty() || comercialService.find(comercialId).isEmpty() || prioridad < 1) {
+        if (clienteService.find(id).isEmpty() || comercialService.find(comercialId).isEmpty()
+            || prioridad < 1 || prioridad > 10) {
             return "redirect:/clientes/editar/" + id;
         }
 
